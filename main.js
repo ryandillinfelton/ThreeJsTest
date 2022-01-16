@@ -1,6 +1,12 @@
 import * as THREE from 'three'
-import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js'
-import { bindMeshToDomObjById, setDomToWorldCamera, createCardMeshForDomObjbyId} from './lib'
+import {
+  bindMeshToDomObjById,
+  setDomToWorldCamera,
+  createCardMeshForDomObjbyId,
+  createFrameGeometry
+} from './lib'
+import { createBackdrop } from './backdrop.lib'
+
 
 import './style.css'
 
@@ -10,34 +16,27 @@ const scene = new THREE.Scene();
 
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
 setDomToWorldCamera(camera);
-const raycaster = new THREE.Raycaster();
 
 const renderer = new THREE.WebGLRenderer({
-  //alpha: true,
+  alpha: false,
   canvas: document.querySelector('#bg'),
 });
-
 renderer.setPixelRatio( window.devicePixelRatio );
 renderer.setSize( window.innerWidth, window.innerHeight );
 
-const geo = new THREE.TorusGeometry( 10, 3, 16, 100 );
-const mat = new THREE.MeshBasicMaterial({ color: 0xFFFFFF });
-const torus = new THREE.Mesh( geo, mat );
-torus.position.z = -30;
 
-scene.add( torus );
-
+//Static scene elements
 const pointLight = new THREE.PointLight( 0xFFFFFF, 0.5 );
 pointLight.position.set(20,20,20);
 
-scene.add(pointLight);
+scene.add(pointLight, 0.6);
 
 const pl2 = new THREE.PointLight( 0xDD00FF, 0.7 );
 pl2.position.set(0, 30, -80);
 scene.add(pl2);
 
 const ambient = new THREE.AmbientLight( 0xFFFFFF, 0.1 );
-scene.add(ambient);
+//scene.add(ambient);
 
 
 let blockMeshes = [];
@@ -48,10 +47,11 @@ function createBlocksByIdList(id) {
 }
 
 function createBlocks() {
+  blockMeshes = [];
   blockIds.forEach((id) => createBlocksByIdList(id));
 }
 
-document.onresize = createBlocks();
+// document.onresize = createBlocks();
 
 function bindMeshes(meshes, ids) {
   let i = 0
@@ -60,23 +60,25 @@ function bindMeshes(meshes, ids) {
   });
 }
 
-function animateTorus(torus) {
-  torus.geometry.attributes.position.array.forEach((pos) => {
-    //console.log(pos);
-  })
+let backdrop;
+function init() {
+  backdrop = createBackdrop()
+  backdrop.position.z = -150
+  scene.add(backdrop)
 }
 
 function animate() {
   const transform = `translateY(${window.scrollY}px)`;
   renderer.domElement.style.transform = transform;
 
+  backdrop.material.uniforms.time.value += 0.01;
+  backdrop.material.uniforms.yOffset.value = window.scrollY/5;
   bindMeshes( blockMeshes, blockIds );
 
-  bindMeshToDomObjById(torus, '#quote-1', 100);
-  animateTorus(torus)
-  
   renderer.render( scene, camera );
   requestAnimationFrame( animate );
 }
 
+init();
+createBlocks();
 animate();
