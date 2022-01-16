@@ -4,6 +4,7 @@ import { boundingRectToWorldDimensions } from './lib'
 export function createBackdrop() {
     const dimensions = boundingRectToWorldDimensions(document.querySelector('#bg').getBoundingClientRect(), 150);
     const planeGeo = new THREE.PlaneGeometry(dimensions.width, dimensions.height)
+
     const shaderMat = new THREE.ShaderMaterial( {
         uniforms: {
             time: { value: 1.0 },

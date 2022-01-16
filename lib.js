@@ -153,7 +153,7 @@ export function createCardMeshForDomObj(domObj, distance) {
 		4, 
 		dimensions.width - 10, 
 		dimensions.height - 10,
-		2, 10, 2, 3, 5
+		2, 40, 4, 10, 5
 	);
 	const frameMaterial = new THREE.MeshStandardMaterial({
 		color: 0xFFFFFF,
@@ -169,7 +169,9 @@ export function createCardMeshForDomObj(domObj, distance) {
 		color: 0x000000
 	});
 	const screen = new THREE.Mesh( screenGeometery, sreenMaterial );
-	return new THREE.Mesh( frameGeometery, frameMaterial ).add(screen);
+	let frame = new THREE.Mesh( frameGeometery, frameMaterial );
+	frame.position.z -= 15;
+	return screen.add(frame);
 }
 
 export function createCardMeshForDomObjbyId(id, distance) { 
